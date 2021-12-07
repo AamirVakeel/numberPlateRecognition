@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import os.path
 
-imgVidAdd = "1.jpeg"
+imgVidAdd = "4.jpeg"
 isImage = True
 
 # Initialize the parameters
@@ -140,3 +140,7 @@ while cv.waitKey(1) < 0:
         cv.imwrite(outputFile, frame.astype(np.uint8));
     else:
         vid_writer.write(frame.astype(np.uint8))
+    
+    cv.imshow('output', frame)
+
+cv.destroyAllWindows()
