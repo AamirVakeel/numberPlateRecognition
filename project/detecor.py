@@ -135,11 +135,6 @@ while cv.waitKey(1) < 0:
     # Remove the bounding boxes with low confidence
     postprocess(frame, outs)
 
-    # Put efficiency information. The function getPerfProfile returns the overall time for inference(t) and the timings for each of the layers(in layersTimes)
-    t, _ = net.getPerfProfile()
-    label = 'Inference time: %.2f ms' % (t * 1000.0 / cv.getTickFrequency())
-    #cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
-
     # Write the frame with the detection boxes
     if (isImage):
         cv.imwrite(outputFile, frame.astype(np.uint8));
