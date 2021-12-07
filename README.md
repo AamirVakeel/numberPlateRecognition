@@ -3,11 +3,8 @@
 ML PROJECT
 Number plate recognition using Yolo and OCR
 
-virtualenv -p python3.5 ml
-. ml/bin/activate
-pip3 install -r req.txt
+python3.8.10
+install numpy opencv 
+python3 detector.py
 
-<!-- sudo apt install python3.5-tkinter [NOT REQUIRED RN] -->
-
-python detector.py --image [image-file-path]
-python detector.py --video [video-file-path]
+If you want to change image or use it over video just edit the variables titled as [imgVidAdd,isImage] as needed and it will work.
