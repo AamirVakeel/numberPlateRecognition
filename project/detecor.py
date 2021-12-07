@@ -1,13 +1,10 @@
-# This code is written at BigVision LLC. It is based on the OpenCV project. It is subject to the license terms in the LICENSE file found in this distribution and at http://opencv.org/license.html
-
-# Usage example:  python3 object_detection_yolo.py --video=run.mp4
-#                 python3 object_detection_yolo.py --image=bird.jpg
-
 import cv2 as cv
-import argparse
 import sys
 import numpy as np
 import os.path
+
+imgVidAdd = "1.jpeg"
+isImage = True
 
 # Initialize the parameters
 confThreshold = 0.5  #Confidence threshold
@@ -16,10 +13,6 @@ nmsThreshold = 0.4  #Non-maximum suppression threshold
 inpWidth = 416  #608     #Width of network's input image
 inpHeight = 416 #608     #Height of network's input image
 
-parser = argparse.ArgumentParser(description='Object Detection using YOLO in OPENCV')
-parser.add_argument('--image', help='Path to image file.')
-parser.add_argument('--video', help='Path to video file.')
-args = parser.parse_args()
 
 # Load names of classes
 classesFile = "classes.names";
@@ -108,31 +101,14 @@ def postprocess(frame, outs):
         height = box[3]
         drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
 
-# Process inputs
-# winName = 'Deep learning object detection in OpenCV'
-# cv.namedWindow(winName, cv.WINDOW_NORMAL)
+cap = cv.VideoCapture(imgVidAdd);
 
-outputFile = "yolo_out_py.avi"
-if (args.image):
-    # Open the image file
-    if not os.path.isfile(args.image):
-        print("Input image file ", args.image, " doesn't exist")
-        sys.exit(1)
-    cap = cv.VideoCapture(args.image)
-    outputFile = args.image[:-4]+'_yolo_out_py.jpg'
-elif (args.video):
-    # Open the video file
-    if not os.path.isfile(args.video):
-        print("Input video file ", args.video, " doesn't exist")
-        sys.exit(1)
-    cap = cv.VideoCapture(args.video)
-    outputFile = args.video[:-4]+'_yolo_out_py.avi'
+outputFile = ""
+videoWriter = None
+if(isImage):
+    outputFile = imgVidAdd.split('.')[0] + '_output.png'
 else:
-    # Webcam input
-    cap = cv.VideoCapture(0)
-
-# Get the video writer initialized to save the output video
-if (not args.image):
+    outputFile = "yolo_out_py.avi"
     vid_writer = cv.VideoWriter(outputFile, cv.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv.CAP_PROP_FRAME_HEIGHT))))
 
 while cv.waitKey(1) < 0:
@@ -165,7 +141,7 @@ while cv.waitKey(1) < 0:
     #cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
 
     # Write the frame with the detection boxes
-    if (args.image):
+    if (isImage):
         cv.imwrite(outputFile, frame.astype(np.uint8));
     else:
         vid_writer.write(frame.astype(np.uint8))
