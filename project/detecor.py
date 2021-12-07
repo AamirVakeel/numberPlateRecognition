@@ -69,9 +69,6 @@ def postprocess(frame, outs):
     frameHeight = frame.shape[0]
     frameWidth = frame.shape[1]
 
-    classIds = []
-    confidences = []
-    boxes = []
     # Scan through all the bounding boxes output from the network and keep only the
     # ones with high confidence scores. Assign the box's class label as the class with the highest score.
     classIds = []
@@ -112,8 +109,8 @@ def postprocess(frame, outs):
         drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
 
 # Process inputs
-winName = 'Deep learning object detection in OpenCV'
-cv.namedWindow(winName, cv.WINDOW_NORMAL)
+# winName = 'Deep learning object detection in OpenCV'
+# cv.namedWindow(winName, cv.WINDOW_NORMAL)
 
 outputFile = "yolo_out_py.avi"
 if (args.image):
