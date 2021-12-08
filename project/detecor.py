@@ -3,8 +3,8 @@ import sys
 import numpy as np
 import os.path
 
-imgVidAdd = "4.jpeg"
-isImage = True
+imgVidAdd = 0
+isImage = False
 
 # Initialize the parameters
 confThreshold = 0.5  #Confidence threshold
@@ -68,7 +68,6 @@ def postprocess(frame, outs):
     confidences = []
     boxes = []
     for out in outs:
-        print("out.shape : ", out.shape)
         for detection in out:
             #if detection[4]>0.001:
             scores = detection[5:]
