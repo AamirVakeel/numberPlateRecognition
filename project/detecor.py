@@ -3,15 +3,16 @@ import sys
 import numpy as np
 import os.path
 
-imgVidAdd = 0
-isImage = False
+#INPUT
+imgVidAdd = '1.jpeg'
+isImage = True
 
 # Initialize the parameters
 confThreshold = 0.5  #Confidence threshold
 nmsThreshold = 0.4  #Non-maximum suppression threshold
 
-inpWidth = 416  #608     #Width of network's input image
-inpHeight = 416 #608     #Height of network's input image
+inpWidth = 416       #Width of network's input image
+inpHeight = 416      #Height of network's input image
 
 
 # Load names of classes
@@ -74,10 +75,8 @@ def postprocess(frame, outs):
             classId = np.argmax(scores)
             #if scores[classId]>confThreshold:
             confidence = scores[classId]
-            if detection[4]>confThreshold:
-                print(detection[4], " - ", scores[classId], " - th : ", confThreshold)
-                print(detection)
             if confidence > confThreshold:
+                print(detection)
                 center_x = int(detection[0] * frameWidth)
                 center_y = int(detection[1] * frameHeight)
                 width = int(detection[2] * frameWidth)
