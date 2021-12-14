@@ -4,7 +4,10 @@ import numpy as np
 import os.path
 
 #INPUT
-imgVidAdd = '1.jpeg'
+dataPath = 'data/'
+modelPath = 'modelFiles/'
+imgVidAdd = dataPath + 'z.jpeg'
+# imgVidAdd = 0
 isImage = True
 
 # Initialize the parameters
@@ -16,7 +19,7 @@ inpHeight = 416      #Height of network's input image
 
 
 # Load names of classes
-classesFile = "classes.names";
+classesFile = modelPath + "classes.names";
 
 classes = None
 with open(classesFile, 'rt') as f:
@@ -24,8 +27,8 @@ with open(classesFile, 'rt') as f:
 
 # Give the configuration and weight files for the model and load the network using them.
 
-modelConfiguration = "darknet-yolov3.cfg";
-modelWeights = "plateDetection.weights";
+modelConfiguration = modelPath +  "yolo-obj.cfg";
+modelWeights = modelPath + "yolo-obj_final_vehicle.weights";
 
 net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
@@ -106,7 +109,7 @@ videoWriter = None
 if(isImage):
     outputFile = imgVidAdd.split('.')[0] + '_output.png'
 else:
-    outputFile = "yolo_out_py.avi"
+    outputFile = imgVidAdd.split('.')[0] + '_output.avi'
     vid_writer = cv.VideoWriter(outputFile, cv.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv.CAP_PROP_FRAME_HEIGHT))))
 
 while cv.waitKey(1) < 0:
