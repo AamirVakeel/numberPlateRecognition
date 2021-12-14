@@ -3,19 +3,23 @@ import sys
 import numpy as np
 import os.path
 
-imgVidAdd = "4.jpeg"
+#INPUT
+dataPath = 'data/'
+modelPath = 'modelFiles/'
+imgVidAdd = dataPath + 'z.jpeg'
+# imgVidAdd = 0
 isImage = True
 
 # Initialize the parameters
 confThreshold = 0.5  #Confidence threshold
 nmsThreshold = 0.4  #Non-maximum suppression threshold
 
-inpWidth = 416  #608     #Width of network's input image
-inpHeight = 416 #608     #Height of network's input image
+inpWidth = 416       #Width of network's input image
+inpHeight = 416      #Height of network's input image
 
 
 # Load names of classes
-classesFile = "classes.names";
+classesFile = modelPath + "classes.names";
 
 classes = None
 with open(classesFile, 'rt') as f:
@@ -23,8 +27,8 @@ with open(classesFile, 'rt') as f:
 
 # Give the configuration and weight files for the model and load the network using them.
 
-modelConfiguration = "darknet-yolov3.cfg";
-modelWeights = "plateDetection.weights";
+modelConfiguration = modelPath +  "darknet-yolov3.cfg";
+modelWeights = modelPath + "plateDetection.weights";
 
 net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
@@ -68,17 +72,14 @@ def postprocess(frame, outs):
     confidences = []
     boxes = []
     for out in outs:
-        print("out.shape : ", out.shape)
         for detection in out:
             #if detection[4]>0.001:
             scores = detection[5:]
             classId = np.argmax(scores)
             #if scores[classId]>confThreshold:
             confidence = scores[classId]
-            if detection[4]>confThreshold:
-                print(detection[4], " - ", scores[classId], " - th : ", confThreshold)
-                print(detection)
             if confidence > confThreshold:
+                print(detection)
                 center_x = int(detection[0] * frameWidth)
                 center_y = int(detection[1] * frameHeight)
                 width = int(detection[2] * frameWidth)
@@ -108,7 +109,7 @@ videoWriter = None
 if(isImage):
     outputFile = imgVidAdd.split('.')[0] + '_output.png'
 else:
-    outputFile = "yolo_out_py.avi"
+    outputFile = imgVidAdd.split('.')[0] + '_output.avi'
     vid_writer = cv.VideoWriter(outputFile, cv.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv.CAP_PROP_FRAME_HEIGHT))))
 
 while cv.waitKey(1) < 0:
