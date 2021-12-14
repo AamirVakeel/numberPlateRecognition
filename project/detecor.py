@@ -27,8 +27,8 @@ with open(classesFile, 'rt') as f:
 
 # Give the configuration and weight files for the model and load the network using them.
 
-modelConfiguration = modelPath +  "yolo-obj.cfg";
-modelWeights = modelPath + "yolo-obj_final_vehicle.weights";
+modelConfiguration = modelPath +  "darknet-yolov3.cfg";
+modelWeights = modelPath + "plateDetection.weights";
 
 net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
