@@ -4,9 +4,10 @@ import numpy as np
 import os.path
 
 #INPUT
-dataPath = 'data/'
-modelPath = 'modelFiles/'
-imgVidAdd = dataPath + 'z.jpeg'
+folderPath = '/home/xense/HDD/Workspaces/pythonWorkspace/ML/projectML/project/'
+dataPath = folderPath + 'data/'
+modelPath = folderPath + 'modelFiles/'
+imgVidAdd = dataPath + '2.jpeg'
 # imgVidAdd = 0
 isImage = True
 
