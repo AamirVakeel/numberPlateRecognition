@@ -1,4 +1,4 @@
-import cv2 as cv
+import cv2
 import sys
 import numpy as np
 import os.path
@@ -32,9 +32,9 @@ with open(classesFile, 'rt') as f:
 modelConfiguration = modelPath +  "darknet-yolov3.cfg";
 modelWeights = modelPath + "plateDetection.weights";
 
-net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
-net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
-net.setPreferableTarget(cv.dnn.DNN_TARGET_CPU)
+net = cv2.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
+net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
 # Get the names of the output layers
 def getOutputsNames(net):
@@ -46,10 +46,10 @@ def getOutputsNames(net):
 # Draw the predicted bounding box
 def drawPred(classId, conf, left, top, right, bottom):
     onlyPlate = frame.copy()[top:bottom,left:right]
-    cv.imwrite(outputPlate, onlyPlate)
+    cv2.imwrite(outputPlate, onlyPlate)
     # Draw a bounding box.
-    #    cv.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 3)
-    cv.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 3)
+    #    cv2.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 3)
+    cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 3)
 
     label = '%.2f' % conf
 
@@ -59,12 +59,12 @@ def drawPred(classId, conf, left, top, right, bottom):
         label = '%s:%s' % (classes[classId], label)
 
     #Display the label at the top of the bounding box
-    labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+    labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
     top = max(top, labelSize[1])
-    cv.rectangle(frame, (left, top - round(1.5*labelSize[1])), (left + round(1.5*labelSize[0]), top + baseLine), (0, 0, 255), cv.FILLED)
-    #cv.rectangle(frame, (left, top - round(1.5*labelSize[1])), (left + round(1.5*labelSize[0]), top + baseLine),    (255, 255, 255), cv.FILLED)
-    cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,0), 2)
-    cv.imwrite(outputFile, frame.astype(np.uint8));
+    cv2.rectangle(frame, (left, top - round(1.5*labelSize[1])), (left + round(1.5*labelSize[0]), top + baseLine), (0, 0, 255), cv2.FILLED)
+    #cv2.rectangle(frame, (left, top - round(1.5*labelSize[1])), (left + round(1.5*labelSize[0]), top + baseLine),    (255, 255, 255), cv2.FILLED)
+    cv2.putText(frame, label, (left, top), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,0), 2)
+    cv2.imwrite(outputFile, frame.astype(np.uint8));
 
 
 # Remove the bounding boxes with low confidence using non-maxima suppression
@@ -102,7 +102,7 @@ def postprocess(frame, outs):
 
     # Perform non maximum suppression to eliminate redundant overlapping boxes with
     # lower confidences.
-    indices = cv.dnn.NMSBoxes(boxes, confidences, confThreshold, nmsThreshold)
+    indices = cv2.dnn.NMSBoxes(boxes, confidences, confThreshold, nmsThreshold)
     for i in indices:
         i = i[0]
         box = boxes[i]
@@ -115,7 +115,7 @@ def postprocess(frame, outs):
 
 for each in allImages:
     imgVidAdd = dataPath + each
-    cap = cv.VideoCapture(imgVidAdd);
+    cap = cv2.VideoCapture(imgVidAdd);
 
     outputFile = ""
     outputPlate = ""
@@ -125,9 +125,9 @@ for each in allImages:
         outputPlate = imgVidAdd.split('.')[0] + 'pl.png'
     else:
         outputFile = imgVidAdd.split('.')[0] + '_output.avi'
-        vid_writer = cv.VideoWriter(outputFile, cv.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv.CAP_PROP_FRAME_HEIGHT))))
+        vid_writer = cv2.VideoWriter(outputFile, cv2.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
-    while cv.waitKey(1) < 0:
+    while cv2.waitKey(1) < 0:
 
         # get frame from the video
         hasFrame, frame = cap.read()
@@ -136,11 +136,11 @@ for each in allImages:
         if not hasFrame:
             # print("Done processing !!!")
             # print("Output file is stored as ", outputFile)
-            # cv.waitKey(3000)
+            # cv2.waitKey(3000)
             break
 
         # Create a 4D blob from a frame.
-        blob = cv.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0,0,0], swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0,0,0], swapRB=True, crop=False)
 
         # Sets the input to the network
         net.setInput(blob)
@@ -153,11 +153,11 @@ for each in allImages:
 
         # Write the frame with the detection boxes
         # if (isImage):
-        #     cv.imwrite(outputFile, frame.astype(np.uint8));
+        #     cv2.imwrite(outputFile, frame.astype(np.uint8));
         # else:
         #     vid_writer.write(frame.astype(np.uint8))
         
-        cv.imshow('output', frame)
+        cv2.imshow('output', frame)
 
-    cv.destroyAllWindows()
+    cv2.destroyAllWindows()
 
