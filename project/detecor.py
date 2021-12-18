@@ -5,11 +5,9 @@ import os.path
 
 #INPUT
 folderPath = '/home/xense/HDD/Workspaces/pythonWorkspace/ML/projectML/project/'
-dataPath = folderPath + 'data/'
+dataPath = folderPath + 'Data/'
 modelPath = folderPath + 'modelFiles/'
-# imgVidAdd = dataPath + '2.jpeg'
-folderName = 'data/'
-allImages = os.listdir(folderPath + folderName)
+allImages = os.listdir(dataPath)
 # imgVidAdd = 0
 isImage = True
 total = 0;
@@ -116,7 +114,7 @@ def postprocess(frame, outs):
 
 
 for each in allImages:
-    imgVidAdd = folderPath + folderName + each
+    imgVidAdd = dataPath + each
     cap = cv.VideoCapture(imgVidAdd);
 
     outputFile = ""
