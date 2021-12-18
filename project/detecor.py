@@ -7,19 +7,22 @@ import os.path
 folderPath = '/home/xense/HDD/Workspaces/pythonWorkspace/ML/projectML/project/'
 dataPath = folderPath + 'data/'
 modelPath = folderPath + 'modelFiles/'
-imgVidAdd = dataPath + '2.jpeg'
+# imgVidAdd = dataPath + '2.jpeg'
+folderName = 'data/'
+allImages = os.listdir(folderPath + folderName)
 # imgVidAdd = 0
 isImage = True
+total = 0;
 
 # Initialize the parameters
-confThreshold = 0.5  #Confidence threshold
-nmsThreshold = 0.4  #Non-maximum suppression threshold
+confThreshold = 0.2  #Confidence threshold
+nmsThreshold = 0.4 #Non-maximum suppression threshold
 
 inpWidth = 416       #Width of network's input image
 inpHeight = 416      #Height of network's input image
 
 
-# Load names of classes
+# Load names of classes1
 classesFile = modelPath + "classes.names";
 
 classes = None
@@ -44,6 +47,8 @@ def getOutputsNames(net):
 
 # Draw the predicted bounding box
 def drawPred(classId, conf, left, top, right, bottom):
+    onlyPlate = frame.copy()[top:bottom,left:right]
+    cv.imwrite(outputPlate, onlyPlate)
     # Draw a bounding box.
     #    cv.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 3)
     cv.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 3)
@@ -61,6 +66,8 @@ def drawPred(classId, conf, left, top, right, bottom):
     cv.rectangle(frame, (left, top - round(1.5*labelSize[1])), (left + round(1.5*labelSize[0]), top + baseLine), (0, 0, 255), cv.FILLED)
     #cv.rectangle(frame, (left, top - round(1.5*labelSize[1])), (left + round(1.5*labelSize[0]), top + baseLine),    (255, 255, 255), cv.FILLED)
     cv.putText(frame, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,0), 2)
+    cv.imwrite(outputFile, frame.astype(np.uint8));
+
 
 # Remove the bounding boxes with low confidence using non-maxima suppression
 def postprocess(frame, outs):
@@ -80,7 +87,11 @@ def postprocess(frame, outs):
             #if scores[classId]>confThreshold:
             confidence = scores[classId]
             if confidence > confThreshold:
+                print(scores)
+                print(classId)
+                print(confidence)
                 print(detection)
+                print('============================')
                 center_x = int(detection[0] * frameWidth)
                 center_y = int(detection[1] * frameHeight)
                 width = int(detection[2] * frameWidth)
@@ -103,46 +114,52 @@ def postprocess(frame, outs):
         height = box[3]
         drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
 
-cap = cv.VideoCapture(imgVidAdd);
 
-outputFile = ""
-videoWriter = None
-if(isImage):
-    outputFile = imgVidAdd.split('.')[0] + '_output.png'
-else:
-    outputFile = imgVidAdd.split('.')[0] + '_output.avi'
-    vid_writer = cv.VideoWriter(outputFile, cv.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv.CAP_PROP_FRAME_HEIGHT))))
+for each in allImages:
+    imgVidAdd = folderPath + folderName + each
+    cap = cv.VideoCapture(imgVidAdd);
 
-while cv.waitKey(1) < 0:
-
-    # get frame from the video
-    hasFrame, frame = cap.read()
-
-    # Stop the program if reached end of video
-    if not hasFrame:
-        print("Done processing !!!")
-        print("Output file is stored as ", outputFile)
-        cv.waitKey(3000)
-        break
-
-    # Create a 4D blob from a frame.
-    blob = cv.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0,0,0], 1, crop=False)
-
-    # Sets the input to the network
-    net.setInput(blob)
-
-    # Runs the forward pass to get output of the output layers
-    outs = net.forward(getOutputsNames(net))
-
-    # Remove the bounding boxes with low confidence
-    postprocess(frame, outs)
-
-    # Write the frame with the detection boxes
-    if (isImage):
-        cv.imwrite(outputFile, frame.astype(np.uint8));
+    outputFile = ""
+    outputPlate = ""
+    videoWriter = None
+    if(isImage):
+        outputFile = imgVidAdd.split('.')[0] + '_output.png'
+        outputPlate = imgVidAdd.split('.')[0] + 'pl.png'
     else:
-        vid_writer.write(frame.astype(np.uint8))
-    
-    cv.imshow('output', frame)
+        outputFile = imgVidAdd.split('.')[0] + '_output.avi'
+        vid_writer = cv.VideoWriter(outputFile, cv.VideoWriter_fourcc('M','J','P','G'), 30, (round(cap.get(cv.CAP_PROP_FRAME_WIDTH)),round(cap.get(cv.CAP_PROP_FRAME_HEIGHT))))
 
-cv.destroyAllWindows()
+    while cv.waitKey(1) < 0:
+
+        # get frame from the video
+        hasFrame, frame = cap.read()
+
+        # Stop the program if reached end of video
+        if not hasFrame:
+            # print("Done processing !!!")
+            # print("Output file is stored as ", outputFile)
+            # cv.waitKey(3000)
+            break
+
+        # Create a 4D blob from a frame.
+        blob = cv.dnn.blobFromImage(frame, 1/255, (inpWidth, inpHeight), [0,0,0], swapRB=True, crop=False)
+
+        # Sets the input to the network
+        net.setInput(blob)
+
+        # Runs the forward pass to get output of the output layers
+        outs = net.forward(getOutputsNames(net))
+
+        # Remove the bounding boxes with low confidence
+        postprocess(frame, outs)
+
+        # Write the frame with the detection boxes
+        # if (isImage):
+        #     cv.imwrite(outputFile, frame.astype(np.uint8));
+        # else:
+        #     vid_writer.write(frame.astype(np.uint8))
+        
+        cv.imshow('output', frame)
+
+    cv.destroyAllWindows()
+
